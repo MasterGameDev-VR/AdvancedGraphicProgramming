@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Transform.h"
 
-
 Rotation Rotation::identity()
 {
 	return Rotation();
@@ -51,11 +50,36 @@ mat3 Rotation::toMatrix() const
 
 void Rotation::fromAxisAngle(vec3 axis)
 {
+	float angle = sqrt(axis.x * axis.x + axis.y * axis.y + axis.z * axis.z);
+	vec3 axisNormalized;
+	axisNormalized.x = axis.x / angle;
+	axisNormalized.y = axis.y / angle;
+	axisNormalized.z = axis.z / angle;
+
+	double s = sin(angle / 2);
+	imm.x = axisNormalized.x * s;
+	imm.y = axisNormalized.y * s;
+	imm.z = axisNormalized.z * s;
+	real = cos(angle / 2);
 }
 
 vec3 Rotation::toAxisAngle() const
 {
-	return vec3();
+	vec3 axis;
+	float angle = 2 * acos(real);
+	if (angle != 0)
+	{
+		axis.x = (imm.x / sqrt(1 - real * real))*angle;
+		axis.y = (imm.x / sqrt(1 - real * real))*angle;
+		axis.z = (imm.x / sqrt(1 - real * real))*angle;
+	}
+	else 
+	{
+		axis.x = angle;
+		axis.y = angle;
+		axis.z = angle;
+	}
+	return axis;
 }
 
 void Rotation::fromEulerAngles(vec3 angles)
