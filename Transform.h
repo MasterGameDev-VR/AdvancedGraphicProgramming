@@ -53,6 +53,7 @@ public:
 	Rotation R;
 
 	/* qui il costruttore che prende S, R, T */ // 8
+	Transform(scalar scale, const Vec3& position, const Rotation& rotation); //8
 
 	// metodi per settare una trasfrmazione da...
 	void lookAt(vec3 worldPos, vec3 worldTarget, vec3 worldUpvec); //9

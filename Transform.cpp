@@ -110,6 +110,14 @@ Rotation Rotation::operator*(Rotation R)
 	return Rotation();
 }
 
+Transform::Transform(scalar scale, const Vec3& position, const Rotation& rotation)
+{
+	S = scale;
+	T = position;
+	R = rotation;
+}
+
+
 void Transform::lookAt(vec3 worldPos, vec3 worldTarget, vec3 worldUpvec)
 {
 }
@@ -133,11 +141,12 @@ void Transform::invert()
 
 void Transform::setIdentity()
 {
+	*this = identity();
 }
 
 Transform Transform::identity()
 {
-	return Transform();
+	return Transform(scalar{1.0f}, Vec3{0.0f, 0.0f, 0.0f}, Rotation::identity());
 }
 
 Transform Transform::translate(scalar dx, scalar dy, scalar dz)
@@ -177,12 +186,18 @@ vec3 Transform::applyToPos(vec3 p) const
 
 vec3 Transform::applyToVec(vec3 v) const
 {
-	return vec3();
+	/*DirectX::XMVECTOR vm = DirectX::XMLoadFloat3(v);
+	vm *= scalar;
+	DirectX::XMStoreFloat4(v, vm);*/
+	v.x *= scalar;
+	v.y *= scalar;
+	v.z *= scalar;
+	return R.apply(v);
 }
 
 vec3 Transform::applyToDir(vec3 d) const
 {
-	return vec3();
+	return R.apply(d);
 }
 
 Transform Transform::blend(const Transform & a, const Transform & b, scalar t)
@@ -201,7 +216,8 @@ void Scene::render()
 
 int Scene::newNode()
 {
-	return 0;
+	nodes.push_back(Node());
+	return nodes.size() - 1;
 }
 
 void Scene::init()
