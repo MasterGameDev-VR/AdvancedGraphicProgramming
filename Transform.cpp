@@ -189,9 +189,9 @@ vec3 Transform::applyToVec(vec3 v) const
 	/*DirectX::XMVECTOR vm = DirectX::XMLoadFloat3(v);
 	vm *= scalar;
 	DirectX::XMStoreFloat4(v, vm);*/
-	v.x *= scalar;
-	v.y *= scalar;
-	v.z *= scalar;
+	v.x *= S;
+	v.y *= S;
+	v.z *= S;
 	return R.apply(v);
 }
 
