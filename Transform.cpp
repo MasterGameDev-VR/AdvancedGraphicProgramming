@@ -45,7 +45,16 @@ void Rotation::fromMatrix(mat3 m)
 
 mat3 Rotation::toMatrix() const
 {
-	return mat3();
+	float n = sqrt(imm.x*imm.x + imm.y*imm.y + imm.z*imm.z + real*real);
+	vec3 immNorm;
+	immNorm.x = imm.x / n;
+	immNorm.y = imm.y / n;
+	immNorm.z = imm.z / n;
+	scalar realNorm = real / n;
+	mat3 mat = {1-2*(immNorm.y*immNorm.y)-2*(immNorm.z*immNorm.z), 2*immNorm.x*immNorm.y - 2*immNorm.z*realNorm, 2*immNorm.x*immNorm.z + 2*immNorm.y*realNorm,
+	2*immNorm.x*immNorm.y + 2*immNorm.z*realNorm, 1-2*(immNorm.x*immNorm.x)-2*(immNorm.z*immNorm.z), 2*immNorm.y*immNorm.z - 2*immNorm.x*realNorm,
+	2*immNorm.x*immNorm.z - 2*immNorm.y *realNorm, 2*immNorm.y*immNorm.z + 2*immNorm.x*realNorm, 1-2*(immNorm.x*immNorm.x)-2*(immNorm.y*immNorm.y)};
+	return mat;
 }
 
 void Rotation::fromAxisAngle(vec3 axis)
