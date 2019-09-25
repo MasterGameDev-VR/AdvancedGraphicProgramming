@@ -7,6 +7,13 @@
 using namespace MCGD20182019;
 using namespace std;
 
+void PrintTransform(Transform T) {
+	
+	cout <<"\n" << "Tx: " << T.T.x << ", Ty: " << T.T.y << ", Tz: " << T.T.z<< "\n";
+	cout << "Rx: " << T.R.toEulerAngles().x << ", Ry: " << T.R.toEulerAngles().y << ", Rz: " << T.R.toEulerAngles().z << "\n";
+	cout << "S:" << T.S << "\n\n";
+}
+
 void UnitTest01() //AKA "PIPPO"
 { 
 	/*
@@ -28,7 +35,14 @@ void UnitTest00()
 void UnitTest13()
 {
 	cout << "UNIT TEST 13 START\n";
+	Transform test = Transform::rotateX(30) * Transform::translate(20, 0, 0) * Transform::scale(10);
+	PrintTransform(test);
+	assert(test.T.x == 20);
+	assert(test.T.y == 0);
+	assert(test.T.z == 0);
 
+	assert(test.S == 10);
+	assert(test.R.toEulerAngles().x == 30);
 
 	cout << "UNIT TEST 13 END\n";
 }

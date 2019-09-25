@@ -2,25 +2,25 @@
 #include <DirectXCollision.h>
 #include <vector>
 
+
 namespace MCGD20182019
 {
-	typedef double scalar;
-
+	typedef float scalar; // conversion from 'double' to 'float' requires a narrowing conversion	:: Fixed using float
 	typedef DirectX::XMFLOAT3 vec3;
 	typedef DirectX::XMFLOAT3X3 mat3;
 	typedef DirectX::XMFLOAT4X4 mat4;
-
+	
+	struct Transform;	//FORWARD DECLARATION
 
 	struct Rotation
 	{
-
 		vec3 imm; scalar real; // campi: parte reale e immaginaria 
 
-		static Rotation identity();  // 1
-		static Transform aroundX(scalar degrees); // 1
-		static Transform aroundY(scalar degrees); // 1
-		static Transform aroundZ(scalar degrees); // 1
-
+		static Rotation identity();// 1
+		static Transform aroundX(scalar degrees);// 1
+		static Transform aroundY(scalar degrees);// 1
+		static Transform aroundZ(scalar degrees);// 1
+		
 		vec3 apply(vec3 p) const; // 2 -- si puo’ usare il prodotto!!!
 
 		void combine(Rotation R); // 3 fa prima this poi R
@@ -34,12 +34,11 @@ namespace MCGD20182019
 		vec3 toAxisAngle() const; // 5 |axis| = angle (in degrees)
 
 		void fromEulerAngles(vec3 angles); // 4
-		vec3 toEulerAngles() const; // DIFFICILE, NON FARE
+		vec3 toEulerAngles() const; // DIFFICILE, NON FARE  (13:: IMPLEMENTATO PER FARE I TEST)
 
 		Rotation inverse() const;
 		Rotation operator* (Rotation R); // 3 prodotto fra quaternioni, 
 										  // quindi anche cumulazione di rotazioni
-
 		vec3 operator() (const vec3 &p) const
 		{
 			return apply(p);

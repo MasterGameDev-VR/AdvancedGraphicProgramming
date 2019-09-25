@@ -2,7 +2,10 @@
 #include "Transform.h"
 
 namespace  MCGD20182019 {
-	Rotation Rotation::identity()
+
+	#define M_PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+
+	MCGD20182019::Rotation Rotation::identity()
 	{
 		return Rotation();
 	}
@@ -46,15 +49,15 @@ namespace  MCGD20182019 {
 
 	mat3 Rotation::toMatrix() const
 	{
-		float n = sqrt(imm.x*imm.x + imm.y*imm.y + imm.z*imm.z + real * real);
+		scalar n = sqrt(imm.x*imm.x + imm.y*imm.y + imm.z*imm.z + real * real);
 		vec3 immNorm;
 		immNorm.x = imm.x / n;
 		immNorm.y = imm.y / n;
 		immNorm.z = imm.z / n;
 		scalar realNorm = real / n;
-		mat3 mat = { 1 - 2 * (immNorm.y*immNorm.y) - 2 * (immNorm.z*immNorm.z), 2 * immNorm.x*immNorm.y - 2 * immNorm.z*realNorm, 2 * immNorm.x*immNorm.z + 2 * immNorm.y*realNorm,
-		2 * immNorm.x*immNorm.y + 2 * immNorm.z*realNorm, 1 - 2 * (immNorm.x*immNorm.x) - 2 * (immNorm.z*immNorm.z), 2 * immNorm.y*immNorm.z - 2 * immNorm.x*realNorm,
-		2 * immNorm.x*immNorm.z - 2 * immNorm.y *realNorm, 2 * immNorm.y*immNorm.z + 2 * immNorm.x*realNorm, 1 - 2 * (immNorm.x*immNorm.x) - 2 * (immNorm.y*immNorm.y) };
+		mat3 mat = { 1.0f - 2.0f * (immNorm.y*immNorm.y) - 2.0f * (immNorm.z*immNorm.z), 2.0f * immNorm.x*immNorm.y - 2.0f * immNorm.z*realNorm, 2.0f * immNorm.x*immNorm.z + 2.0f * immNorm.y*realNorm,
+		2.0f * immNorm.x*immNorm.y + 2.0f * immNorm.z*realNorm, 1.0f - 2.0f * (immNorm.x*immNorm.x) - 2.0f * (immNorm.z*immNorm.z), 2.0f * immNorm.y*immNorm.z - 2.0f * immNorm.x*realNorm,
+		2.0f * immNorm.x*immNorm.z - 2.0f * immNorm.y *realNorm, 2.0f * immNorm.y*immNorm.z + 2.0f * immNorm.x*realNorm, 1.0f - 2.0f * (immNorm.x*immNorm.x) - 2.0f * (immNorm.y*immNorm.y) };
 		return mat;
 	}
 
@@ -98,7 +101,27 @@ namespace  MCGD20182019 {
 
 	vec3 Rotation::toEulerAngles() const
 	{
-		return vec3();
+		//COPY PASTE FROM WIKI
+		vec3 angles;
+
+		// roll (x-axis rotation)
+		double sinr_cosp = +2.0f * (real * imm.x + imm.y * imm.z);
+		double cosr_cosp = +1.0f - 2.0f * (imm.x * imm.x + imm.y * imm.y);
+		angles.x = atan2(sinr_cosp, cosr_cosp);
+
+		// pitch (y-axis rotation)
+		double sinp = +2.0f * (real* imm.y - imm.z * imm.x);
+		if (fabs(sinp) >= 1.0f)
+			angles.y = copysign(M_PI / 2, sinp); // use 90 degrees if out of range
+		else
+			angles.y = asin(sinp);
+
+		// yaw (z-axis rotation)
+		double siny_cosp = +2.0f * (real * imm.z + imm.x * imm.y);
+		double cosy_cosp = +1.0f - 2.0f * (imm.y * imm.y + imm.z * imm.z);
+		angles.z = atan2(siny_cosp, cosy_cosp);
+
+		return angles;
 	}
 
 	Rotation Rotation::inverse() const
@@ -157,32 +180,38 @@ namespace  MCGD20182019 {
 
 	Transform Transform::translate(scalar dx, scalar dy, scalar dz)
 	{
-		return Transform();
+		return Transform::translate( vec3{ dx, dy, dz } );
 	}
 
-	Transform Transform::translate(vec3 v)
+	Transform Transform::translate( vec3 v )
 	{
-		return Transform();
+		return Transform(scalar{ 1.0f }, vec3{ v.x,v.y,v.z }, Rotation::identity());
 	}
 
 	Transform Transform::scale(scalar ss)
 	{
-		return Transform();
+		return Transform(scalar{ ss }, vec3{ 0.0f, 0.0f, 0.0f }, Rotation::identity());
 	}
 
 	Transform Transform::rotateX(scalar degrees)
 	{
-		return Transform();
+		Rotation R;
+		R.fromEulerAngles(vec3{ degrees, 0.0f, 0.0f });
+		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
 	Transform Transform::rotateY(scalar degrees)
 	{
-		return Transform();
+		Rotation R;
+		R.fromEulerAngles(vec3{ 0.0f, degrees, 0.0f });
+		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
 	Transform Transform::rotateZ(scalar degrees)
 	{
-		return Transform();
+		Rotation R;
+		R.fromEulerAngles(vec3{  0.0f, 0.0f, degrees });
+		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
 	vec3 Transform::applyToPos(vec3 p) const
