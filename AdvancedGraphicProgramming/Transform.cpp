@@ -195,22 +195,22 @@ namespace  MCGD20182019 {
 
 	Transform Transform::rotateX(scalar degrees)
 	{
-		Rotation R;
-		R.fromEulerAngles(vec3{ degrees, 0.0f, 0.0f });
+		Rotation R = Rotation::identity();
+		R.fromAxisAngle(vec3{ degrees, 0.0f, 0.0f });
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
 	Transform Transform::rotateY(scalar degrees)
 	{
-		Rotation R;
-		R.fromEulerAngles(vec3{ 0.0f, degrees, 0.0f });
+		Rotation R = Rotation::identity();
+		R.fromAxisAngle(vec3{ 0.0f, degrees, 0.0f });
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
 	Transform Transform::rotateZ(scalar degrees)
 	{
-		Rotation R;
-		R.fromEulerAngles(vec3{  0.0f, 0.0f, degrees });
+		Rotation R = Rotation::identity();
+		R.fromAxisAngle(vec3{  0.0f, 0.0f, degrees });
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
