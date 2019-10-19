@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Transform.h"
+#include <math.h>
 
 namespace  MCGD20182019 {
 
@@ -149,6 +150,26 @@ namespace  MCGD20182019 {
 
 	void Transform::lookAt(vec3 worldPos, vec3 worldTarget, vec3 worldUpvec)
 	{
+		using namespace DirectX;
+
+		XMVECTOR position = XMLoadFloat3(&worldPos);
+		XMVECTOR target = XMLoadFloat3(&worldTarget);
+		XMVECTOR up = XMLoadFloat3(&worldUpvec);
+
+		XMVECTOR direction = XMVectorSubtract(target, position);
+
+		XMVECTOR dotVec = XMVector3Dot(up, direction);
+
+		float dot;
+		XMStoreFloat(&dot, dotVec);
+
+		float angle = acosf(dot);
+
+		XMVECTOR crossVec = XMVector3Normalize( XMVector3Cross(direction, up) ) * angle;
+		vec3 cross;
+		DirectX::XMStoreFloat3(&cross, crossVec);
+	
+		R.fromAxisAngle(cross);
 	}
 
 	mat4 Transform::toMat() const
