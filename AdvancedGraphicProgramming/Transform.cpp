@@ -136,9 +136,10 @@ namespace  MCGD20182019 {
 	}
 
 	Transform::Transform()
-	{
-
-	}
+		: S{ 1.f }
+		, T{ 0.f, 0.f, 0.f }
+		, R{ { 0.f, 0.f, 0.f }, 1.f }
+	{ }
 
 	Transform::Transform(scalar scale, const vec3& position, const Rotation& rotation)
 	{
@@ -174,7 +175,36 @@ namespace  MCGD20182019 {
 
 	mat4 Transform::toMat() const
 	{
-		return mat4();
+		DirectX::XMMATRIX scaling =
+		{
+			S,   0.f, 0.f, 0.f,
+			0.f, S,   0.f, 0.f,
+			0.f, 0.f, S,   0.f,
+			0.f, 0.f, 0.f, 1.f
+		};
+
+		mat3 tmp = R.toMatrix();
+		DirectX::XMMATRIX rotation =
+		{
+			tmp._11, tmp._21, tmp._31, 0.f,
+			tmp._12, tmp._22, tmp._32, 0.f,
+			tmp._13, tmp._23, tmp._33, 0.f,
+			0.f,     0.f,     0.f,     1.f
+		};
+
+		DirectX::XMMATRIX translation =
+		{
+			1.f, 0.f, 0.f, 0.f,
+			0.f, 1.f, 0.f, 0.f,
+			0.f, 0.f, 1.f, 0.f,
+			T.x, T.y, T.z, 1
+		};
+
+		mat4 result;
+		DirectX::XMMATRIX transform = scaling * rotation * translation;
+		DirectX::XMStoreFloat4x4(&result, transform);
+
+		return result;
 	}
 
 	void Transform::fromMat(mat4 M)
