@@ -37,11 +37,41 @@ namespace  MCGD20182019 {
 
 	void Rotation::invert()
 	{
+		float num2 = (((imm.x * imm.x) + (imm.y * imm.y)) + (imm.z * imm.z)) + (real * real);
+		float num = 1.f / num2;
+		imm.x = -imm.x * num;
+		imm.y = -imm.y * num;
+		imm.z = -imm.z * num;
+		real = real * num;
 	}
 
 	Rotation Rotation::blend(Rotation a, Rotation b, scalar t)
 	{
-		return Rotation();
+		float num = t;
+		float num2 = 1.f - t;
+		Rotation result;
+		float num3 = (((a.imm.x * b.imm.x) + (a.imm.y * b.imm.y)) + (a.imm.z * b.imm.z)) + (a.real * b.real);
+		if (num3 >= 0.f)
+		{
+			result.imm.x = (num2 * a.imm.x) + (num * b.imm.x);
+			result.imm.y = (num2 * a.imm.y) + (num * b.imm.y);
+			result.imm.z = (num2 * a.imm.z) + (num * b.imm.z);
+			result.real = (num2 * a.real) + (num * b.real);
+		}
+		else
+		{
+			result.imm.x = (num2 * a.imm.x) - (num * b.imm.x);
+			result.imm.y = (num2 * a.imm.y) - (num * b.imm.y);
+			result.imm.z = (num2 * a.imm.z) - (num * b.imm.z);
+			result.real = (num2 * a.real) - (num * b.real);
+		}
+		float num4 = (((result.imm.x * result.imm.x) + (result.imm.y * result.imm.y)) + (result.imm.z * result.imm.z)) + (result.real * result.real);
+		float num5 = 1.f / sqrt(num4);
+		result.imm.x *= num5;
+		result.imm.y *= num5;
+		result.imm.z *= num5;
+		result.real *= num5;
+		return result;
 	}
 
 	void Rotation::fromMatrix(mat3 m)
@@ -127,7 +157,10 @@ namespace  MCGD20182019 {
 
 	Rotation Rotation::inverse() const
 	{
-		return Rotation();
+		Rotation result = *this;
+		result.invert();
+
+		return result;
 	}
 
 	Rotation Rotation::operator*(Rotation R)
@@ -310,8 +343,10 @@ namespace  MCGD20182019 {
 	{
 	}
 
-	void Scene::reattachUnder(int newParent)
+	void Scene::reattachUnder(int nodeI, int newParent)
 	{
+		nodes[nodeI].parent = newParent;
+		nodes[newParent].children.push_back(nodeI);
 	}
 
 	void Scene::transformGlobal(int nodeI, Transform T)

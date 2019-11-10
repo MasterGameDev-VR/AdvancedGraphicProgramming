@@ -10,7 +10,7 @@ namespace MCGD20182019
 	typedef DirectX::XMFLOAT3X3 mat3;
 	typedef DirectX::XMFLOAT4X4 mat4;
 	
-	struct Transform;	//FORWARD DECLARATION
+	class Transform;	//FORWARD DECLARATION
 
 	struct Rotation
 	{
@@ -36,7 +36,7 @@ namespace MCGD20182019
 		void fromEulerAngles(vec3 angles); // 4
 		vec3 toEulerAngles() const; // DIFFICILE, NON FARE  (13:: IMPLEMENTATO PER FARE I TEST)
 
-		Rotation inverse() const;
+		Rotation inverse() const;	// 7
 		Rotation operator* (Rotation R); // 3 prodotto fra quaternioni, 
 										  // quindi anche cumulazione di rotazioni
 		vec3 operator() (const vec3 &p) const
@@ -128,7 +128,7 @@ namespace MCGD20182019
 		void render();  // 12
 		int newNode(); // 8 return index to created node
 		void init(); // 2 deletes everything. Creates one node: the root (node 0) 
-		void reattachUnder(int newParent); // 7 leaves global matrix unaffected!
+		void reattachUnder(int nodeI, int newParent); // 7 leaves global matrix unaffected!
 		void transformGlobal(int nodeI, Transform T);  // 1
 		void transformLocal(int nodeI, Transform T);   // 1
 	};
