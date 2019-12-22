@@ -50,8 +50,10 @@ void UnitTest01() //AKA "PIPPO"
 
 void UnitTest00()
 {
+	cout << "UNIT TEST 00 START\n";
 	vec3 res = Transform::rotateX(90).applyToPos(vec3(30, 10, 5));
 	//assertSamePoint(res, vec3(30, 5, -10));
+	cout << "UNIT TEST 00 - END\n";
 }
 
 void UnitTest10()
@@ -151,6 +153,19 @@ void UnitTest13()
 	cout << "UNIT TEST 13 END\n";
 }
 
+void UnitTest06()
+{
+	cout << "UNIT TEST 06 START\n";
+	Transform test = Transform::rotateX(30) * Transform::translate(20, 0, 0) * Transform::scale(10);
+	PrintTransform(test);
+	mat3 matrix = test.R.toMatrix();
+
+	cout << matrix._11 << " " << matrix._12 << " " << matrix._13 << "\r\n";
+	cout << matrix._21 << " " << matrix._22 << " " << matrix._23 << "\r\n";
+	cout << matrix._31 << " " << matrix._32 << " " << matrix._33 << "\r\n";
+	cout << "UNIT TEST 06 - END\n";
+}
+
 int main()
 {
     cout << "ADVANCED GRAPHIC PROGRAMMING TEST CLASS\n";
@@ -158,6 +173,9 @@ int main()
 
 	UnitTest00();
 	UnitTest01();
+	UnitTest06();
 	UnitTest10();
 	UnitTest13();
+
+
 }
