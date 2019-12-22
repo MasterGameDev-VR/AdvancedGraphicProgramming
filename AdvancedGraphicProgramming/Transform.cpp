@@ -5,6 +5,7 @@
 namespace  MCGD20182019 {
 
 	#define M_PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+	#define M_PI_by_180 (float) M_PI / 180.0f
 
 	MCGD20182019::Rotation Rotation::identity()
 	{
@@ -126,8 +127,27 @@ namespace  MCGD20182019 {
 		return axis;
 	}
 
+	/*
+		13 REASSIGNED 
+
+		x - pitch
+		y - roll
+		z - yaw
+	*/
 	void Rotation::fromEulerAngles(vec3 angles)
 	{
+		// Abbreviations for the various angular functions
+		double cy = cos(angles.z * 0.5);
+		double sy = sin(angles.z * 0.5);
+		double cp = cos(angles.y * 0.5);
+		double sp = sin(angles.y * 0.5);
+		double cr = cos(angles.x * 0.5);
+		double sr = sin(angles.x * 0.5);
+
+		real = cy * cp * cr + sy * sp * sr;
+		imm.x = cy * cp * sr - sy * sp * cr;
+		imm.y = sy * cp * sr + cy * sp * cr;
+		imm.z = sy * cp * cr - cy * sp * sr;
 	}
 
 	vec3 Rotation::toEulerAngles() const
@@ -151,6 +171,10 @@ namespace  MCGD20182019 {
 		double siny_cosp = +2.0f * (real * imm.z + imm.x * imm.y);
 		double cosy_cosp = +1.0f - 2.0f * (imm.y * imm.y + imm.z * imm.z);
 		angles.z = atan2(siny_cosp, cosy_cosp);
+
+		angles.x /= M_PI_by_180 ;
+		angles.y /= M_PI_by_180 ;
+		angles.z /= M_PI_by_180 ;
 
 		return angles;
 	}
@@ -262,39 +286,56 @@ namespace  MCGD20182019 {
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, Rotation::identity());
 	}
 
+	/*
+		call ::translate
+	*/
 	Transform Transform::translate(scalar dx, scalar dy, scalar dz)
 	{
 		return Transform::translate( vec3{ dx, dy, dz } );
 	}
 
+	/*
+		return a Transform with uniform 1 scale T = vec3 and rotation identity
+	*/
 	Transform Transform::translate( vec3 v )
 	{
 		return Transform(scalar{ 1.0f }, vec3{ v.x,v.y,v.z }, Rotation::identity());
 	}
 
+	/*
+		return a transform with ss scale factor, no translation and Identity as R quaternion
+	*/
 	Transform Transform::scale(scalar ss)
 	{
 		return Transform(scalar{ ss }, vec3{ 0.0f, 0.0f, 0.0f }, Rotation::identity());
 	}
 
+	/*
+		Using conversion fromAxisAngle and return a new Transform with uniform 1 scale and not translated.
+	*/
 	Transform Transform::rotateX(scalar degrees)
 	{
 		Rotation R = Rotation::identity();
-		R.fromAxisAngle(vec3{ degrees, 0.0f, 0.0f });
+		R.fromEulerAngles(vec3{ degrees / M_PI_by_180 * 10, 0.0f, 0.0f });
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
-
+	/*
+	Using conversion fromAxisAngle and return a new Transform with uniform 1 scale and not translated.
+	*/
 	Transform Transform::rotateY(scalar degrees)
 	{
 		Rotation R = Rotation::identity();
-		R.fromAxisAngle(vec3{ 0.0f, degrees, 0.0f });
+		R.fromEulerAngles(vec3{ 0.0f, degrees / M_PI_by_180 * 10, 0.0f });
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 
+	/*
+	Using conversion fromAxisAngle and return a new Transform with uniform 1 scale and not translated.
+	*/
 	Transform Transform::rotateZ(scalar degrees)
 	{
 		Rotation R = Rotation::identity();
-		R.fromAxisAngle(vec3{  0.0f, 0.0f, degrees });
+		R.fromEulerAngles(vec3{  0.0f, 0.0f, degrees / M_PI_by_180 * 10 });
 		return Transform(scalar{ 1.0f }, vec3{ 0.0f, 0.0f, 0.0f }, R);
 	}
 

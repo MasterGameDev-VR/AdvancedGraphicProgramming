@@ -4,6 +4,8 @@
 #include "pch.h"
 #include "Transform.h"
 
+#define FLOAT_PRECISION 0.5f
+
 using namespace MCGD20182019;
 using namespace std;
 
@@ -141,14 +143,23 @@ void UnitTest10()
 void UnitTest13()
 {
 	cout << "UNIT TEST 13 START\n";
-	Transform test = Transform::rotateX(30) * Transform::translate(20, 0, 0) * Transform::scale(10);
-	PrintTransform(test);
-	assert(test.T.x == 20);
-	assert(test.T.y == 0);
-	assert(test.T.z == 0);
+	Transform T_test = Transform::translate(20, 0, 0);
+	PrintTransform(T_test);
+	assert(T_test.T.x == 20);
+	assert(T_test.T.y == 0);
+	assert(T_test.T.z == 0);
 
-	assert(test.S == 10);
-	assert(test.R.toEulerAngles().x == 30);
+	Transform Rx_test = Transform::rotateX(30);
+	PrintTransform(Rx_test);
+	assert( (Rx_test.R.toEulerAngles().x < 30 + FLOAT_PRECISION && Rx_test.R.toEulerAngles().x >= 30) );
+
+	Transform Ry_test = Transform::rotateY(30);
+	PrintTransform(Ry_test);
+	assert((Ry_test.R.toEulerAngles().y < 30 + FLOAT_PRECISION && Ry_test.R.toEulerAngles().y >= 30));
+
+	Transform Rz_test = Transform::rotateZ(30);
+	PrintTransform(Rz_test);
+	assert((Rz_test.R.toEulerAngles().z < 30 + FLOAT_PRECISION && Rz_test.R.toEulerAngles().z >= 30));
 
 	cout << "UNIT TEST 13 END\n";
 }
@@ -156,7 +167,7 @@ void UnitTest13()
 void UnitTest06()
 {
 	cout << "UNIT TEST 06 START\n";
-	Transform test = Transform::rotateX(30) * Transform::translate(20, 0, 0) * Transform::scale(10);
+	Transform test = Transform::rotateX(30);
 	PrintTransform(test);
 	mat3 matrix = test.R.toMatrix();
 

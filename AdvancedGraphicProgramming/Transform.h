@@ -33,7 +33,7 @@ namespace MCGD20182019
 		void fromAxisAngle(vec3 axis); // 5 |axis| = angle (in degrees)
 		vec3 toAxisAngle() const; // 5 |axis| = angle (in degrees)
 
-		void fromEulerAngles(vec3 angles); // 4
+		void fromEulerAngles(vec3 angles); // 4 WONT ->> 13 FIXED
 		vec3 toEulerAngles() const; // DIFFICILE, NON FARE  (13:: IMPLEMENTATO PER FARE I TEST)
 
 		Rotation inverse() const;	// 7
