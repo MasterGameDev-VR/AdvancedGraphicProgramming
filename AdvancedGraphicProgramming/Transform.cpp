@@ -19,7 +19,6 @@ namespace  MCGD20182019 {
 
 	MCGD20182019::Rotation Rotation::identity()
 	{
-		return Rotation();
 		// No rotation
 		return Rotation(vec3{ 0.f, 0.f, 0.f }, 1.0f /* == cos(0) */);
 	}
