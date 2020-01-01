@@ -7,6 +7,7 @@ namespace MCGD20182019
 {
 	typedef float scalar; // conversion from 'double' to 'float' requires a narrowing conversion	:: Fixed using float
 	typedef DirectX::XMFLOAT3 vec3;
+	typedef DirectX::XMFLOAT4 vec4;
 	typedef DirectX::XMFLOAT3X3 mat3;
 	typedef DirectX::XMFLOAT4X4 mat4;
 	
@@ -15,6 +16,9 @@ namespace MCGD20182019
 	struct Rotation
 	{
 		vec3 imm; scalar real; // campi: parte reale e immaginaria 
+
+		Rotation();
+		Rotation(const vec3& immaginaryCoeffs, scalar w);
 
 		static Rotation identity();// 1
 		static Transform aroundX(scalar degrees);// 1
@@ -31,6 +35,7 @@ namespace MCGD20182019
 		mat3 toMatrix() const;  // 6 facile
 
 		void fromAxisAngle(vec3 axis); // 5 |axis| = angle (in degrees)
+		static Rotation fromAxisAngle(vec3 axis, scalar angle); // (added for task 1) non in-place version of the method above, using a supplied angle
 		vec3 toAxisAngle() const; // 5 |axis| = angle (in degrees)
 
 		void fromEulerAngles(vec3 angles); // 4 WONT ->> 13 FIXED
@@ -123,7 +128,7 @@ namespace MCGD20182019
 	struct Scene
 	{
 		std::vector< Node > nodes;
-		Transform globalTr(int nodeId) const;
+		Transform globalTr(int nodeId) const; // [unassigned]--> done by 1
 		int cameraNode;
 		void render();  // 12
 		int newNode(); // 8 return index to created node

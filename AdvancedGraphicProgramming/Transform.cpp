@@ -7,24 +7,53 @@ namespace  MCGD20182019 {
 	#define M_PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 	#define M_PI_by_180 (float) M_PI / 180.0f
 
+	// do-nothing ctor
+	Rotation::Rotation() {}
+
+	// ctor with arguments
+	Rotation::Rotation(const vec3& immaginaryCoeffs, scalar w)
+	{
+		imm = immaginaryCoeffs;
+		real = w;
+	}
+
 	MCGD20182019::Rotation Rotation::identity()
 	{
 		return Rotation();
+		// No rotation
+		return Rotation(vec3{ 0.f, 0.f, 0.f }, 1.0f /* == cos(0) */);
 	}
 
+	// I was not sure about the meaning of the prototype in the original draft. 
+	// My interpretation of the task at hand was to implement the following:
+	// (*) return an empty new transform with scale set to 1.0f, positioned at the origin, 
+	// and rotation set to degrees degrees around x
 	Transform Rotation::aroundX(scalar degrees)
 	{
-		return Transform();
+		// I added an out-of-place version of the fromAxisAngle to get a fresh new quaternion
+		// instead of rotating in-place
+		Rotation xRotation = fromAxisAngle(vec3{ 1.0, 0.0, 0.0 }, degrees);
+		Transform outTransform(1.0f, vec3{ 0.0, 0.0, 0.0 }, xRotation);
+
+		return outTransform;
 	}
 
+	// Exactly as above (*), but around the y axis
 	Transform Rotation::aroundY(scalar degrees)
 	{
-		return Transform();
+		Rotation yRotation = fromAxisAngle(vec3{ 0.0, 1.0, 0.0 }, degrees);
+		Transform outTransform(1.0f, vec3{ 0.0,0.0,0.0 }, yRotation);
+
+		return outTransform;
 	}
 
+	// Exactly as above (*), but around the z axis
 	Transform Rotation::aroundZ(scalar degrees)
 	{
-		return Transform();
+		Rotation zRotation = fromAxisAngle(vec3{ 0.0, 0.0, 1.0 }, degrees);
+		Transform outTransform(1.0f, vec3{ 0.0,0.0,0.0 }, zRotation);
+
+		return outTransform;
 	}
 
 	vec3 Rotation::apply(vec3 p) const
@@ -106,6 +135,20 @@ namespace  MCGD20182019 {
 		imm.y = axisNormalized.y * s;
 		imm.z = axisNormalized.z * s;
 		real = cos(angle / 2);
+	}
+
+	Rotation Rotation::fromAxisAngle(vec3 axis, scalar angle)
+	{
+		vec3 axisNormalized;
+		axisNormalized.x = axis.x / angle;
+		axisNormalized.y = axis.y / angle;
+		axisNormalized.z = axis.z / angle;
+
+		scalar s = sin(angle / 2.0f);
+		vec3 immaginaryCoeffs{ axisNormalized.x * s, axisNormalized.y * s, axisNormalized.z * s };
+		scalar w = cos(angle / 2);
+
+		return Rotation(immaginaryCoeffs, w);
 	}
 
 	vec3 Rotation::toAxisAngle() const
@@ -341,7 +384,19 @@ namespace  MCGD20182019 {
 
 	vec3 Transform::applyToPos(vec3 p) const
 	{
-		return vec3();
+		// Get transformation matrix combining scaling, translation and rotation
+		mat4 transformationMatrix = toMat();
+		// Convert to needed types
+		DirectX::XMMATRIX transformationMatrixXM = DirectX::XMLoadFloat4x4(&transformationMatrix);
+		DirectX::XMVECTOR vectorXM = DirectX::XMLoadFloat3(&p);
+
+		// Actually apply the transformation to the input point (assumes w always = 1)
+		DirectX::XMVECTOR outVectorXM = XMVector3Transform(vectorXM, transformationMatrixXM);
+
+		vec3 result;
+		DirectX::XMStoreFloat3(&result, outVectorXM);
+
+		return result;
 	}
 
 	vec3 Transform::applyToVec(vec3 v) const
@@ -367,7 +422,20 @@ namespace  MCGD20182019 {
 
 	Transform Scene::globalTr(int nodeId) const
 	{
-		return Transform();
+		Transform worldTransform = Transform::identity();
+		Node currentNode = nodes.at(nodeId);
+		int parentI = currentNode.parent;
+		Transform currentLocalTransform = currentNode.T;
+
+		while (parentI != -1)
+		{
+			worldTransform = currentLocalTransform * worldTransform;
+
+			currentNode = nodes.at(parentI);
+			parentI = currentNode.parent;
+		}
+
+		return worldTransform;
 	}
 
 	void Scene::render()
@@ -392,9 +460,20 @@ namespace  MCGD20182019 {
 
 	void Scene::transformGlobal(int nodeI, Transform T)
 	{
+		Node node = nodes.at(nodeI);
+
+		Transform worldTransform = globalTr(nodeI);
+
+		// TODO (task unclear)
 	}
 
 	void Scene::transformLocal(int nodeI, Transform T)
 	{
+		Node node = nodes.at(nodeI);
+		Transform& localTransform = node.T;
+
+		localTransform.combine(T);
+
+		// TODO (task unclear)
 	}
 }
