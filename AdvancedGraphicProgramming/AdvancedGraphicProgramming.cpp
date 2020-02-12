@@ -177,6 +177,22 @@ void UnitTest06()
 	cout << "UNIT TEST 06 - END\n";
 }
 
+void UnitTest05()
+{
+
+
+	Rotation Rtest;
+	Rtest.imm = vec3(0, 2, 0);
+	Rtest.real = sqrt(3.f) / 2;
+	cout << "UNIT TEST 05 START\n";
+
+	Rtest.apply(vec3(10, 10, 10));
+
+
+	cout << "UNIT TEST 05 - END\n";
+
+}
+
 int main()
 {
     cout << "ADVANCED GRAPHIC PROGRAMMING TEST CLASS\n";
@@ -187,6 +203,7 @@ int main()
 	UnitTest06();
 	UnitTest10();
 	UnitTest13();
+	UnitTest05();
 
 
 }

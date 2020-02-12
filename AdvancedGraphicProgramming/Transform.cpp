@@ -29,7 +29,35 @@ namespace  MCGD20182019 {
 
 	vec3 Rotation::apply(vec3 p) const
 	{
-		return vec3();
+		float num2 = (((imm.x * imm.x) + (imm.y * imm.y)) + (imm.z * imm.z)) + (real * real);
+		float num = 1.f / num2;
+		float resX = (1.f - 2.f * num * (imm.y * imm.y + imm.z * imm.z))  *  p.x + 2.f * num * (imm.x * imm.y - imm.z * real)           *  p.y + 2.f * num * (imm.x * imm.z + imm.y * real)           *  p.z;
+		float resY = 2.f * num * (imm.x * imm.y + imm.z * real)          *  p.x + (1.f - 2.f * num * (imm.x * imm.x + imm.z * imm.z))  *  p.y + 2.f * num * (imm.y * imm.z - imm.x * real)           *  p.z;
+		float resZ = 2.f * num * (imm.x * imm.z - imm.y * real)          *  p.x + 2.f * num * (imm.y * imm.z + imm.x * real)           *  p.y + (1.f - 2.f * num * (imm.x * imm.x + imm.y * imm.y))  *  p.z;
+
+		std::cout << "Hard - coded math:" << "\n";
+		std::cout << resX << " " << resY << " " << resZ <<"\n";
+
+
+		mat3 tmp = this->toMatrix();
+		DirectX::XMMATRIX rotation =
+		{
+			tmp._11, tmp._21, tmp._31, 0.f,
+			tmp._12, tmp._22, tmp._32, 0.f,
+			tmp._13, tmp._23, tmp._33, 0.f,
+			0.f,     0.f,     0.f,     1.f
+		};
+
+		DirectX::XMVECTOR p_tmp = XMLoadFloat3(&p);
+		DirectX::XMMATRIX p_mat_tmp = { p_tmp,p_tmp,p_tmp,p_tmp };
+		DirectX::XMMATRIX res_mat_tmp = DirectX::XMMatrixMultiply(p_mat_tmp, rotation);
+		DirectX::XMFLOAT4 res;
+		XMStoreFloat4(&res, res_mat_tmp.r[0]);
+		std::cout << "DirectX registers usage:" << "\n";
+		std::cout << res.w << " " << res.x << " " << res.y << " " << res.z << "\n";
+
+		return vec3(resX, resY, resZ);
+
 	}
 
 	void Rotation::combine(Rotation R)
