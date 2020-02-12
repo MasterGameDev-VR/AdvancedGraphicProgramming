@@ -143,8 +143,8 @@ namespace  MCGD20182019 {
 		if (angle != 0)
 		{
 			axis.x = (imm.x / sqrt(1 - real * real))*angle;
-			axis.y = (imm.x / sqrt(1 - real * real))*angle;
-			axis.z = (imm.x / sqrt(1 - real * real))*angle;
+			axis.y = (imm.y / sqrt(1 - real * real))*angle;
+			axis.z = (imm.z / sqrt(1 - real * real))*angle;
 		}
 		else
 		{
@@ -410,6 +410,8 @@ namespace  MCGD20182019 {
 
 	void Scene::init()
 	{
+		nodes.erase(nodes.begin(), nodes.end());
+		nodes.push_back(Node());
 	}
 
 	void Scene::reattachUnder(int nodeI, int newParent)
