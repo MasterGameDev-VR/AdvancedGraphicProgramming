@@ -12,5 +12,6 @@
 // TODO: add headers that you want to pre-compile here
 #include <iostream>
 #include <assert.h>
-
+#define _USE_MATH_DEFINES
+#include <math.h>
 #endif //PCH_H

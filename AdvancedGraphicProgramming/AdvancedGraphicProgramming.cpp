@@ -180,15 +180,42 @@ void UnitTest06()
 void UnitTest05()
 {
 
-
+	//Rotation test 0
 	Rotation Rtest;
 	Rtest.imm = vec3(0, 2, 0);
 	Rtest.real = sqrt(3.f) / 2;
+
+	//Rotation test 1
+
+	//usage of the method fromAxisAngle
+	//angle = 90   =   pi/2
+	// 90 * 90 /2 = 45 * 90 = 4050  =  pi^2 / 8
+	//M_PI_2;
+	Rotation Rtest1;
+	Rtest1.fromAxisAngle(vec3(M_PI_2/sqrt(2),0.f, M_PI_2 / sqrt(2)));
+	//Rtest1.imm = vec3(1, 0, 1);
+	//Rtest1.real = sqrt(2.f) / 2;
+	
+	//Rotation test 2
+	Rotation Rtest2;
+	Rtest2.fromAxisAngle(vec3(M_PI_4 / sqrt(2), 0.f, M_PI_4 / sqrt(2)));
+
+
 	cout << "UNIT TEST 05 START\n";
-
+	cout << "rotation test 0\n";
 	Rtest.apply(vec3(10, 10, 10));
-
-
+	cout << "\n";
+	cout << "rotation test 1 - 4 rotations \n";
+	vec3 res1Rtest1 = Rtest1.apply(vec3(10, 0, -10));
+	vec3 res2Rtest1 = Rtest1.apply(res1Rtest1);
+	vec3 res3Rtest1 = Rtest1.apply(res2Rtest1);
+	vec3 res4Rtest1 = Rtest1.apply(res3Rtest1);
+	cout << "\n";
+	cout << "rotation test 2 - 4 rotations \n";
+	vec3 res1Rtest2 = Rtest2.apply(vec3(10, 0, -10));
+	vec3 res2Rtest2 = Rtest2.apply(res1Rtest2);
+	vec3 res3Rtest2 = Rtest2.apply(res2Rtest2);
+	vec3 res4Rtest2 = Rtest2.apply(res3Rtest2);
 	cout << "UNIT TEST 05 - END\n";
 
 }
