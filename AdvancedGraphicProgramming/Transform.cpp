@@ -62,6 +62,7 @@ namespace  MCGD20182019 {
 
 	void Rotation::combine(Rotation R)
 	{
+		(*this) = *this * R;
 	}
 
 	void Rotation::invert()
@@ -231,7 +232,21 @@ namespace  MCGD20182019 {
 
 	Rotation Rotation::operator*(Rotation R)
 	{
-		return Rotation();
+		XMVECTOR dotVec = XMVector3Dot(this->imm, R.imm);
+		float dot;
+		XMStoreFloat(&dot, dotVec);
+		float scalar = real * R.real - dot;
+
+		XMVECTOR crossVec = XMVector3Cross(this->imm, R.imm));
+		vec3 cross;
+		DirectX::XMStoreFloat3(&cross, crossVec);
+
+		vec3 imaginary;
+		imaginary.x = (R.imm.x * real) + (imm.x * R.real) + cross.x;
+		imaginary.y = (R.imm.y * real) + (imm.y * R.real) + cross.y;
+		imaginary.z = (R.imm.z * real) + (imm.z * R.real) + cross.z;
+			   
+		return Rotation(scalar, imaginary);
 	}
 
 	Transform::Transform()
